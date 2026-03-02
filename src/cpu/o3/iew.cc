@@ -536,8 +536,12 @@ IEW::squashDueToValueMispredict(const DynInstPtr& inst, ThreadID tid)
     DPRINTF(IEW, "[tid:%i] Value misprediction, squashing younger insts, "
             "PC: %s [sn:%llu].\n", tid, inst->pcState(), inst->seqNum);
 
+    // Use strict < (not <=) so that a memory-ordering squash for the
+    // same load (which uses <=) is never overridden.  A mem-order
+    // violation must re-execute the load (includeSquashInst=true),
+    // whereas an LVP mispredict must not (includeSquashInst=false).
     if (!toCommit->squash[tid] ||
-            inst->seqNum <= toCommit->squashedSeqNum[tid]) {
+            inst->seqNum < toCommit->squashedSeqNum[tid]) {
         toCommit->squash[tid] = true;
 
         toCommit->squashedSeqNum[tid] = inst->seqNum;
