@@ -618,6 +618,9 @@ ISA::readMiscReg(RegIndex idx)
         }
       case MISCREG_DIT:
         {
+            // cc_reg::Dit is always authoritative: in speculative mode,
+            // MsrImmDit64 writes it as a renamed dest; in non-speculative
+            // mode, setMiscReg(MISCREG_DIT) keeps it in sync.
             CPSR cpsr = 0;
             cpsr.dit = tc->getReg(cc_reg::Dit);
             DPRINTF(MiscRegs, "Reading DIT from CC reg: %d\n",

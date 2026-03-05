@@ -74,9 +74,13 @@ CompSimplifier::trySimplify(const DynInstPtr &inst, CPU *cpu, RegVal &result)
             break;
         }
     }
-    panic_if(!foundDit, "IntMult/IntDiv instruction [sn:%llu] PC %s "
-             "missing DitCC source operand",
-             inst->seqNum, inst->pcState());
+    // If DitCC not found (e.g., AArch32 path), skip simplification conservatively
+    if (!foundDit) {
+        DPRINTF(CompSimp, "DitCC src not found for [sn:%llu] PC %s, "
+                "skipping simplification conservatively\n",
+                inst->seqNum, inst->pcState());
+        return false;
+    }
 
     // Check destination register is integer and not always-ready.
     if (inst->numDestRegs() == 0)

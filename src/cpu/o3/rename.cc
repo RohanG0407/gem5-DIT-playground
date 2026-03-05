@@ -1151,10 +1151,6 @@ Rename::renameDestRegs(const DynInstPtr &inst, ThreadID tid)
 
         scoreboard->unsetReg(rename_result.first);
 
-        // panic_if(flat_dest_regid == ArmISA::cc_reg::Dit,
-        //          "DitCC written as dest by [sn:%llu] PC %s",
-        //          inst->seqNum, inst->pcState());
-
         DPRINTF(Rename,
                 "[tid:%i] "
                 "Renaming arch reg %i (%s) to physical reg %i (%i).\n",
