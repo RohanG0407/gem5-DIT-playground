@@ -360,6 +360,7 @@ def operands {{
                  condCode == COND_GT || condCode == COND_LE) ?
                 cc_reg::V : cc_reg::Zero)'''),
     'FpCondCodes': CCReg('cc_reg::Fp'),
+    'DitCC': CCReg('cc_reg::Dit'),
 
     #Abstracted floating point reg operands
     'FpDest': VectorElem('dest'),

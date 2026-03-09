@@ -57,6 +57,7 @@ namespace ArmISA
 Decoder::Decoder(const ArmDecoderParams &params)
     : InstDecoder(params, &data),
       dvmEnabled(params.dvm_enabled),
+      speculativeDit(params.speculative_dit),
       data(0), fpscrLen(0), fpscrStride(0),
       decoderFlavor(safe_cast<ISA *>(params.isa)->decoderFlavor())
 {

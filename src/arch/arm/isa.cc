@@ -461,6 +461,7 @@ ISA::readMiscReg(RegIndex idx)
         cpsr = miscRegs[idx];
         auto pc = tc->pcState().as<PCState>();
         cpsr.t = pc.thumb() ? 1 : 0;
+        cpsr.dit = tc->getReg(cc_reg::Dit);
         return cpsr;
     }
 
@@ -618,7 +619,14 @@ ISA::readMiscReg(RegIndex idx)
         }
       case MISCREG_DIT:
         {
-            return miscRegs[MISCREG_CPSR] & 0x1000000;
+            // cc_reg::Dit is always authoritative: in speculative mode,
+            // MsrImmDit64 writes it as a renamed dest; in non-speculative
+            // mode, setMiscReg(MISCREG_DIT) keeps it in sync.
+            CPSR cpsr = 0;
+            cpsr.dit = tc->getReg(cc_reg::Dit);
+            DPRINTF(MiscRegs, "Reading DIT from CC reg: %d\n",
+                    (uint64_t)cpsr.dit);
+            return cpsr;
         }
       case MISCREG_L2CTLR:
         {
@@ -1344,11 +1352,13 @@ ISA::setMiscReg(RegIndex idx, RegVal val)
             break;
           case MISCREG_DIT:
             {
-                // DIT does NOT affect memory accesses - no MMU invalidation
                 CPSR cpsr = miscRegs[MISCREG_CPSR];
                 cpsr.dit = (uint8_t) ((CPSR) newVal).dit;
                 newVal = cpsr;
                 idx = MISCREG_CPSR;
+                tc->setReg(cc_reg::Dit, (RegVal) cpsr.dit);
+                DPRINTF(MiscRegs, "Writing DIT CC reg: %d\n",
+                        (uint64_t)cpsr.dit);
             }
             break;
           case MISCREG_L2CTLR:

@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include <stdint.h>
 
 static inline void enable_dit(void) {
@@ -15,11 +14,8 @@ int main(void) {
     enable_dit();
     uint64_t dit = read_dit();
 
-    if (dit & 0x1000000) {  // DIT is bit 24
-        printf("TEST_DIT_ENABLE: PASS\n");
+    if (dit & 0x1000000)  // DIT is bit 24
         return 0;
-    } else {
-        printf("TEST_DIT_ENABLE: FAIL (DIT=%lu)\n", dit);
+    else
         return 1;
-    }
 }

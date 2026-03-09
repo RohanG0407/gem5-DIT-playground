@@ -47,3 +47,7 @@ class ArmDecoder(InstDecoder):
     dvm_enabled = Param.Bool(
         False, "Does the decoder implement DVM operations"
     )
+
+    speculative_dit = Param.Bool(
+        True, "Use speculative (renamed CC reg) DIT tracking"
+    )

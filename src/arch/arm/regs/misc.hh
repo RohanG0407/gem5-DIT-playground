@@ -2491,7 +2491,7 @@ namespace ArmISA
 
     // This mask selects bits of the CPSR that actually go in the CondCodes
     // integer register to allow renaming.
-    static const uint32_t CondCodesMask   = 0xF00F0000;
+    static const uint32_t CondCodesMask   = 0xF10F0000;
     static const uint32_t CpsrMaskQ       = 0x08000000;
 
     // APSR (Application Program Status Register Mask). It is the user level

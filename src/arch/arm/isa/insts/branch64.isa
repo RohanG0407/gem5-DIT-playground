@@ -256,6 +256,7 @@ let {{
                     CondCodesNZ = new_cpsr.nz;
                     CondCodesC  = new_cpsr.c;
                     CondCodesV  = new_cpsr.v;
+                    DitCC = (RegVal) new_cpsr.dit;
 
                     NextAArch64 = !new_cpsr.width;
                     // Switch between aarch64 and aarch32, or vice versa.

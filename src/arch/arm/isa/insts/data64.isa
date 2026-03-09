@@ -165,10 +165,16 @@ let {{
         global header_output, decoder_output, exec_output
         templateBase = "DataX%dReg" % regOps
         classNamePrefix = mnem[0].upper() + mnem[1:]
+
+        # For DIT-sensitive ops, add DitCC as source operand
+        ditCode = code
+        if overrideOpClass in ("IntMultOp", "IntDivOp"):
+            ditCode = "(void)DitCC;\n" + code
+
         if overrideOpClass:
             iop = ArmInstObjParams(mnem, classNamePrefix + "64",
                                    templateBase + "Op",
-                                   { 'code': code,
+                                   { 'code': ditCode,
                                      'op_class': overrideOpClass },
                                    optArgs)
         else:
@@ -633,6 +639,31 @@ let {{
         cpsr.daif = cpsr.daif & ~imm;
         Cpsr = cpsr;
     ''')
+
+    msrImmDitCode = '''
+            auto pre_flat =
+                (MiscRegIndex)snsBankedIndex64(dest, xc->tcBase());
+            auto *isa = static_cast<ArmISA::ISA *>(
+                xc->tcBase()->getIsaPtr());
+            auto misc_index =
+                (MiscRegIndex)isa->flattenMiscIndex(pre_flat);
+
+            if (fault = checkFaultAccessAArch64SysReg(misc_index,
+                Cpsr, xc->tcBase(), *this); fault != NoFault) {
+                    return fault;
+            }
+
+            DitCC = (RegVal)(imm & 0x1);
+            DPRINTF(Arm, "MSR DIT imm: setting DitCC = %d\\n",
+                    (imm & 0x1));
+    '''
+    msrImmDitIop = ArmInstObjParams("msr", "MsrImmDit64",
+                                    "MiscRegImmOp64",
+                                    { "code" : msrImmDitCode,
+                                      "op_class" : "SystemOp"})
+    header_output += MiscRegOp64Declare.subst(msrImmDitIop)
+    decoder_output += MiscRegOp64Constructor.subst(msrImmDitIop)
+    exec_output += BasicExecute.subst(msrImmDitIop)
 
     def buildDataXCompInst(mnem, instType, suffix, code):
         global header_output, decoder_output, exec_output

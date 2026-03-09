@@ -1261,6 +1261,7 @@ ArmStaticInst::getPSTATEFromPSR(ThreadContext *tc, CPSR cpsr, CPSR spsr) const
     new_cpsr.c = spsr.c;
     new_cpsr.v = spsr.v;
     new_cpsr.pan = spsr.pan;
+    new_cpsr.dit = spsr.dit;
     if (new_cpsr.width) {
         // aarch32
         const ITSTATE it = getRestoredITBits(tc, spsr);

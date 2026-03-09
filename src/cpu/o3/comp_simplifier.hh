@@ -97,6 +97,7 @@ class CompSimplifier : public SimObject
         statistics::Scalar multByOne;
         statistics::Scalar divOfZero;
         statistics::Scalar divByOne;
+        statistics::Scalar ditSuppressed;
     } stats;
 };
 

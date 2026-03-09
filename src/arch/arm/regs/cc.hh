@@ -57,6 +57,7 @@ enum : RegIndex
     _VIdx,
     _GeIdx,
     _FpIdx,
+    _DitIdx,
     _ZeroIdx,
     NumRegs
 };
@@ -67,6 +68,7 @@ const char * const RegName[NumRegs] = {
     "v",
     "ge",
     "fp",
+    "dit",
     "zero"
 };
 
@@ -96,6 +98,7 @@ inline constexpr RegId
     V = ccRegClass[_VIdx],
     Ge = ccRegClass[_GeIdx],
     Fp = ccRegClass[_FpIdx],
+    Dit = ccRegClass[_DitIdx],
     Zero = ccRegClass[_ZeroIdx];
 
 } // namespace cc_reg

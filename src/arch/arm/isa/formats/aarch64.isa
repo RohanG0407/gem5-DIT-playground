@@ -478,7 +478,7 @@ namespace Aarch64
     }
 
     StaticInstPtr
-    decodePstate(ExtMachInst machInst)
+    decodePstate(ExtMachInst machInst, bool speculativeDit)
     {
         uint8_t op1 = bits(machInst, 18, 16);
         uint8_t crm = bits(machInst, 11, 8);
@@ -510,8 +510,12 @@ namespace Aarch64
                 machInst, MISCREG_SPSEL, crm);
           case 0x1a:
             // DIT
-            return new MsrImm64(
-                machInst, MISCREG_DIT, crm);
+            if (speculativeDit)
+                return new MsrImmDit64(
+                    machInst, MISCREG_DIT, crm);
+            else
+                return new MsrImm64(
+                    machInst, MISCREG_DIT, crm);
           case 0x1b:
             // SVE SVCR - SMSTART/SMSTOP
             return decodeSmeMgmt(machInst);
@@ -718,7 +722,7 @@ namespace Aarch64
                           case 0b0011:
                             return decodeBarriers(machInst, dec.dvmEnabled);
                           case 0b0100:
-                            return decodePstate(machInst);
+                            return decodePstate(machInst, dec.speculativeDit);
                           default:
                             return new Unknown64(machInst);
                         }

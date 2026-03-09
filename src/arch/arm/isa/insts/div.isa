@@ -37,6 +37,7 @@
 
 let {{
     sdivCode = '''
+    (void)DitCC;
     if (Op2_sw == 0) {
         Dest_sw = 0;
     } else if (Op1_sw == INT_MIN && Op2_sw == -1) {
@@ -54,6 +55,7 @@ let {{
     exec_output = PredOpExecute.subst(sdivIop)
 
     udivCode = '''
+    (void)DitCC;
     if (Op2_uw == 0) {
         Dest_uw = 0;
     } else {

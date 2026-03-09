@@ -68,6 +68,9 @@ class Decoder : public InstDecoder
     /** True if the decoder should emit DVM Ops (treated as Loads) */
     const bool dvmEnabled;
 
+    /** True if MSR DIT uses speculative renamed CC reg path */
+    const bool speculativeDit;
+
   protected:
     //The extended machine instruction being generated
     ExtMachInst emi;

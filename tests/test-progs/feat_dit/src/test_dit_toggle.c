@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include <stdint.h>
 
 static inline void enable_dit(void) {
@@ -16,28 +15,14 @@ static inline uint64_t read_dit(void) {
 }
 
 int main(void) {
-    int pass = 1;
-
-    // Test multiple toggles
     for (int i = 0; i < 5; i++) {
         enable_dit();
-        if ((read_dit() & 0x1000000) != 0x1000000) {  // DIT is bit 24
-            printf("TEST_DIT_TOGGLE: FAIL at enable iteration %d\n", i);
-            pass = 0;
-            break;
-        }
+        if ((read_dit() & 0x1000000) != 0x1000000)
+            return 1;
 
         disable_dit();
-        if ((read_dit() & 0x1000000) != 0) {  // DIT is bit 24
-            printf("TEST_DIT_TOGGLE: FAIL at disable iteration %d\n", i);
-            pass = 0;
-            break;
-        }
+        if ((read_dit() & 0x1000000) != 0)
+            return 1;
     }
-
-    if (pass) {
-        printf("TEST_DIT_TOGGLE: PASS\n");
-        return 0;
-    }
-    return 1;
+    return 0;
 }

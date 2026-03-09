@@ -5,7 +5,7 @@ GEM5_BIN = $(GEM5_ROOT)/build/ARM/gem5.opt
 CONFIG = $(GEM5_ROOT)/configs/example/arm/fdp_neoverse_v2_binary.py
 BINDIR = bin/arm/linux
 
-TESTS = test_dit_enable test_dit_disable test_dit_read test_dit_toggle
+TESTS = test_dit_enable test_dit_disable test_dit_read test_dit_toggle test_dit_compsimp
 
 .PHONY: all build run-test clean
 
@@ -20,10 +20,12 @@ run-test: build
 	for test in $(TESTS); do \
 		echo "----------------------------------------"; \
 		echo "Running $$test..."; \
-		$(GEM5_BIN) $(CONFIG) --binary $(BINDIR)/$$test 2>&1 | tail -5; \
+		$(GEM5_BIN) $(CONFIG) --binary $(BINDIR)/$$test > /dev/null 2>&1; \
 		if [ $$? -eq 0 ]; then \
+			echo "  PASS"; \
 			passed=$$((passed + 1)); \
 		else \
+			echo "  FAIL"; \
 			failed=$$((failed + 1)); \
 		fi; \
 	done; \

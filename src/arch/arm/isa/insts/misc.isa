@@ -171,6 +171,7 @@ let {{
         CondCodesC  = new_cpsr.c;
         CondCodesV  = new_cpsr.v;
         CondCodesGE = new_cpsr.ge;
+        DitCC       = (RegVal) new_cpsr.dit;
 
         NextThumb = (new_cpsr).t;
         NextItState = (((new_cpsr).it2 << 2) & 0xFC)
@@ -334,6 +335,7 @@ let {{
         CondCodesC = new_cpsr.c;
         CondCodesV = new_cpsr.v;
         CondCodesGE = new_cpsr.ge;
+        DitCC = (RegVal) new_cpsr.dit;
     '''
     msrCpsrRegIop = ArmInstObjParams("msr", "MsrCpsrReg", "MsrRegOp",
                                      { "code": msrCpsrRegCode,
@@ -367,6 +369,7 @@ let {{
         CondCodesC = new_cpsr.c;
         CondCodesV = new_cpsr.v;
         CondCodesGE = new_cpsr.ge;
+        DitCC = (RegVal) new_cpsr.dit;
     '''
     msrCpsrImmIop = ArmInstObjParams("msr", "MsrCpsrImm", "MsrImmOp",
                                      { "code": msrCpsrImmCode,

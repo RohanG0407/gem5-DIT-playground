@@ -27,6 +27,7 @@
 
 #include "cpu/o3/comp_simplifier.hh"
 
+#include "arch/arm/regs/cc.hh"
 #include "base/trace.hh"
 #include "cpu/o3/cpu.hh"
 #include "cpu/o3/dyn_inst.hh"
@@ -56,6 +57,31 @@ CompSimplifier::trySimplify(const DynInstPtr &inst, CPU *cpu, RegVal &result)
     if (op_class != IntMultOp && op_class != IntDivOp)
         return false;
 
+    // Check DIT: if set, skip simplification (constant-time mode)
+    ThreadID tid = inst->threadNumber;
+    bool foundDit = false;
+    for (int i = 0; i < inst->numSrcRegs(); i++) {
+        if (inst->srcRegIdx(i) == ArmISA::cc_reg::Dit) {
+            foundDit = true;
+            RegVal ditVal = cpu->getReg(inst->renamedSrcIdx(i), tid);
+            if (ditVal != 0) {
+                DPRINTF(CompSimp, "DIT=1: skipping simplification for "
+                        "[sn:%llu] PC %s\n",
+                        inst->seqNum, inst->pcState());
+                ++stats.ditSuppressed;
+                return false;
+            }
+            break;
+        }
+    }
+    // If DitCC not found (e.g., AArch32 path), skip simplification conservatively
+    if (!foundDit) {
+        DPRINTF(CompSimp, "DitCC src not found for [sn:%llu] PC %s, "
+                "skipping simplification conservatively\n",
+                inst->seqNum, inst->pcState());
+        return false;
+    }
+
     // Check destination register is integer and not always-ready.
     if (inst->numDestRegs() == 0)
         return false;
@@ -84,7 +110,6 @@ CompSimplifier::trySimplify(const DynInstPtr &inst, CPU *cpu, RegVal &result)
 
     ++stats.candidates;
 
-    ThreadID tid = inst->threadNumber;
     RegVal src0 = cpu->getReg(inst->renamedSrcIdx(intSrcIndices[0]), tid);
     RegVal src1 = cpu->getReg(inst->renamedSrcIdx(intSrcIndices[1]), tid);
 
@@ -157,7 +182,9 @@ CompSimplifier::CompSimplifierStats::CompSimplifierStats(CompSimplifier *cs)
       ADD_STAT(divOfZero, statistics::units::Count::get(),
                "Number of zero-divided-by-x simplifications"),
       ADD_STAT(divByOne, statistics::units::Count::get(),
-               "Number of divide-by-one simplifications")
+               "Number of divide-by-one simplifications"),
+      ADD_STAT(ditSuppressed, statistics::units::Count::get(),
+               "Number of simplifications suppressed by DIT")
 {
     coverage.precision(6);
 }

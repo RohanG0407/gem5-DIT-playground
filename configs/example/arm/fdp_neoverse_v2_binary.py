@@ -64,6 +64,7 @@ scons build/ARM/gem5.opt
 """
 
 import argparse
+import sys
 
 import m5
 from m5.util import addToPath
@@ -147,6 +148,12 @@ parser.add_argument(
     "--enable-comp-simp",
     action="store_true",
     help="Enable Computation Simplification for trivial IntMult/IntDiv.",
+)
+
+parser.add_argument(
+    "--no-speculative-dit",
+    action="store_true",
+    help="Use serializing (non-speculative) DIT path instead of renamed CC reg.",
 )
 
 args = parser.parse_args()
@@ -276,6 +283,11 @@ for core in processor.cores:
     if args.enable_comp_simp:
         cpu.compSimplifier.enabled = True
 
+    # Set speculative DIT mode on the decoder.
+    if args.no_speculative_dit:
+        for dec in cpu.decoder:
+            dec.speculative_dit = False
+
 
 workload_name = args.binary if args.binary else args.workload
 print(
@@ -283,6 +295,7 @@ print(
     f"FDP {'disabled' if args.disable_fdp else 'enabled'}"
     f" LVP {'enabled' if args.enable_lvp else 'disabled'}"
     f" CompSimp {'enabled' if args.enable_comp_simp else 'disabled'}"
+    f" DIT {'serializing' if args.no_speculative_dit else 'speculative'}"
 )
 
 
@@ -312,3 +325,4 @@ simulator = Simulator(board=board)
 simulator.run()
 
 print("Simulation done.")
+sys.exit(simulator.get_last_exit_event_code())

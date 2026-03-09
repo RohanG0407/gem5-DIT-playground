@@ -83,13 +83,17 @@ let {{
 
         Name = mnem.capitalize()
 
+        # Add DitCC as source operand for DIT-aware dependency tracking
+        ditPrefix = "(void)DitCC;\n"
+
         if unCc:
             iop = ArmInstObjParams(mnem, Name, base,
-                    { "code" : code, "predicate_test": pickPredicate(code),
+                    { "code" : ditPrefix + code,
+                      "predicate_test": pickPredicate(code),
                       "op_class": "IntMultOp" })
         if doCc:
             iopCc = ArmInstObjParams(mnem + "s", Name + "Cc", base,
-                    { "code" : code + ccCode,
+                    { "code" : ditPrefix + code + ccCode,
                       "predicate_test": pickPredicate(code + ccCode),
                       "op_class": "IntMultOp" })
 
