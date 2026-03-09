@@ -644,6 +644,7 @@ ArmFault::invoke64(ThreadContext *tc, const StaticInstPtr &inst)
     spsr.nz = tc->getReg(cc_reg::Nz);
     spsr.c = tc->getReg(cc_reg::C);
     spsr.v = tc->getReg(cc_reg::V);
+    spsr.dit = tc->getReg(cc_reg::Dit);
     spsr.ss = isResetSPSR() ? 0: cpsr.ss;
     if (from64) {
         // Force some bitfields to 0

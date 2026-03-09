@@ -537,7 +537,7 @@ IEW::squashDueToValueMispredict(const DynInstPtr& inst, ThreadID tid)
             "PC: %s [sn:%llu].\n", tid, inst->pcState(), inst->seqNum);
 
     if (!toCommit->squash[tid] ||
-            inst->seqNum <= toCommit->squashedSeqNum[tid]) {
+            inst->seqNum < toCommit->squashedSeqNum[tid]) {
         toCommit->squash[tid] = true;
 
         toCommit->squashedSeqNum[tid] = inst->seqNum;

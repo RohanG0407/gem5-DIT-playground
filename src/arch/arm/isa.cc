@@ -461,6 +461,7 @@ ISA::readMiscReg(RegIndex idx)
         cpsr = miscRegs[idx];
         auto pc = tc->pcState().as<PCState>();
         cpsr.t = pc.thumb() ? 1 : 0;
+        cpsr.dit = tc->getReg(cc_reg::Dit);
         return cpsr;
     }
 
